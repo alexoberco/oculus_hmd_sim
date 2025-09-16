@@ -1,0 +1,31 @@
+# GZ -> ROS
+- ros_topic_name: /clock
+  gz_topic_name: /clock
+  ros_type_name: rosgraph_msgs/msg/Clock
+  gz_type_name: gz.msgs.Clock
+  direction: GZ_TO_ROS
+
+- ros_topic_name: /joint_states
+  gz_topic_name: /world/hmd_world/model/hmd_head/joint_state
+  ros_type_name: sensor_msgs/msg/JointState
+  gz_type_name: gz.msgs.Model
+  direction: GZ_TO_ROS
+
+# ROS -> GZ (comandos de juntas)
+- ros_topic_name: /gz/hmd/neck_yaw/cmd
+  gz_topic_name: /gz/hmd/neck_yaw/cmd
+  ros_type_name: std_msgs/msg/Float64
+  gz_type_name: gz.msgs.Double
+  direction: ROS_TO_GZ
+
+- ros_topic_name: /gz/hmd/neck_pitch/cmd
+  gz_topic_name: /gz/hmd/neck_pitch/cmd
+  ros_type_name: std_msgs/msg/Float64
+  gz_type_name: gz.msgs.Double
+  direction: ROS_TO_GZ
+
+- ros_topic_name: /gz/hmd/head_roll/cmd
+  gz_topic_name: /gz/hmd/head_roll/cmd
+  ros_type_name: std_msgs/msg/Float64
+  gz_type_name: gz.msgs.Double
+  direction: ROS_TO_GZ
