@@ -1,5 +1,5 @@
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
@@ -13,24 +13,30 @@ def generate_launch_description():
 
     gz = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('ros_gz_sim'),
-                         'launch', 'gz_sim.launch.py')),
+            os.path.join(get_package_share_directory('ros_gz_sim'),'launch','gz_sim.launch.py')),
         launch_arguments={'gz_args': f'-r {world}'}.items()
     )
 
-    # Spawn directo del URDF en el mundo (sin robot_description)
-    spawn = Node(
-        package='ros_gz_sim', executable='create', output='screen',
-        arguments=['-world', 'hmd_world',
-                   '-file', urdf,
-                   '-name', 'hmd_head']
-    )
-
-    bridge = Node(
-        package='ros_gz_bridge', executable='parameter_bridge',
-        arguments=['--ros-args', '-p', f'config_file:={yaml}'],
+    robot_state_pub = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        name='robot_state_publisher',
+        parameters=[{'robot_description': open(urdf).read()},
+                    {'use_sim_time': True}],
         output='screen'
     )
 
+    spawn = Node(
+        package='ros_gz_sim', executable='create', output='screen',
+        arguments=['-world', 'hmd_world', '-file', urdf, '-name', 'hmd_head']
+    )
 
-    return LaunchDescription([gz, spawn, bridge])
+    bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        name='parameter_bridge',
+        parameters=[{'config_file': yaml}],
+        output='screen'
+    )
+
+    return LaunchDescription([gz, spawn, bridge, robot_state_pub])
