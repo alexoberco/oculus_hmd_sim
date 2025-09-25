@@ -10,6 +10,10 @@ def generate_launch_description():
     world = os.path.join(share, 'worlds', 'hmd_world.sdf')
     urdf  = os.path.join(share, 'urdf',  'hmd_head.urdf')
     yaml  = os.path.join(share, 'config','bridge.yaml')
+    rviz_cfg = os.path.join(share, 'config', 'rviz_config.rviz')
+    img_yaml = os.path.join(share, 'config', 'bridge_image.yaml')
+
+
 
     gz = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -27,9 +31,17 @@ def generate_launch_description():
     )
 
     spawn = Node(
-        package='ros_gz_sim', executable='create', output='screen',
-        arguments=['-world', 'hmd_world', '-file', urdf, '-name', 'hmd_head']
+        package='ros_gz_sim',
+        executable='create',
+        output='screen',
+        arguments=[
+            '-world', 'hmd_world',
+            '-file', urdf,
+            '-name', 'hmd_head',
+            '-x', '0', '-y', '0', '-z', '0.12'   # << aquí subes 0.5 en Z
+        ]
     )
+
 
     bridge = Node(
         package='ros_gz_bridge',
@@ -38,5 +50,23 @@ def generate_launch_description():
         parameters=[{'config_file': yaml}],
         output='screen'
     )
+    
+    gz_image_bridge = Node(
+        package='ros_gz_image',
+        executable='image_bridge',
+        name='ros_gz_image_bridge',
+        arguments=['/hmd_cam/image'],   # topic de la cámara en GZ
+        parameters=[img_yaml],
+        output='screen'
+    )
+    
+    rviz = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        arguments=['-d', rviz_cfg],
+        parameters=[{'use_sim_time': True}],
+        output='screen'
+    )
 
-    return LaunchDescription([gz, spawn, bridge, robot_state_pub])
+    return LaunchDescription([gz, spawn, bridge, robot_state_pub, rviz, gz_image_bridge])

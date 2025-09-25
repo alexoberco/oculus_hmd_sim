@@ -1,0 +1,20 @@
+ros_gz_image_bridge:
+  ros__parameters:
+    # Par\u00e1metros del transport ffmpeg para /hmd_cam/image
+    hmd_cam:
+      image:
+        ffmpeg:
+          encoder: h264_nvenc # o 'libx264' si no hay NVENC
+          bit_rate: 8000000 # ~8 Mb/s de partida (1080p60)
+          gop_size: 30 # GOP corto (menor lag entre keyframes)
+          max_b_frames: 0 # sin B-frames = baja latencia
+          encoder_av_options: "preset:llhp,rc:cbr,zerolatency=1,maxrate:8000000,bufsize:4000000,bf:0,profile:high,annexb:1,repeat-headers:1"
+
+    # 👇 QoS overrides del *publisher* EXPLÍCITOS (en vez de 'sensor_data')
+    # Formato est\u00e1ndar de ROS 2 para overrides de QoS por t\u00f3pico.
+    qos_overrides:
+      /hmd_cam/image/ffmpeg:
+        publisher:
+          reliability: best_effort
+          history: keep_last
+          depth: 5

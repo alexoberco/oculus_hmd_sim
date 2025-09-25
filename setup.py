@@ -13,7 +13,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/launch', glob.glob('launch/*.launch.py')),
         ('share/' + package_name + '/urdf',   glob.glob('urdf/*.urdf')),
-        ('share/' + package_name + '/config', glob.glob('config/*.yaml')),
+        ('share/' + package_name + '/config', glob.glob('config/*')),
         ('share/' + package_name + '/worlds', glob.glob('worlds/*.sdf')),
     ],
     install_requires=['setuptools'],

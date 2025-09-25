@@ -4,44 +4,106 @@
   <!-- base -->
   <link name="base_link">
     <inertial>
+      <mass value="18.0"/>
+      <origin xyz="0 0 0"/>
+      <!-- Ixx = Iyy = 0.3552, Izz = 0.6912  (kg·m²) -->
+      <inertia ixx="0.3552" ixy="0" ixz="0" iyy="0.3552" iyz="0" izz="0.6912"/>
+    </inertial>
+    <visual><geometry><box size="0.48 0.48 0.08"/></geometry></visual>
+    <collision><geometry><box size="0.48 0.48 0.08"/></geometry></collision>
+  </link>
+
+  <!-- === RUEDAS estilo "trípode" con esferas simples === -->
+  <!-- Una al frente (+X), dos atrás a ±120°. Radio ~0.20 m. Centro a z = -r para tocar el suelo. -->
+  <link name="wheel_back_sphere">
+    <inertial>
       <mass value="0.5"/>
       <origin xyz="0 0 0"/>
-      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      <!-- Esfera: I = 0.00072 -->
+      <inertia ixx="0.00072" ixy="0" ixz="0" iyy="0.00072" iyz="0" izz="0.00072"/>
     </inertial>
-    <visual><geometry><cylinder radius="0.05" length="0.02"/></geometry></visual>
-    <collision><geometry><cylinder radius="0.05" length="0.02"/></geometry></collision>
+    <visual><geometry><sphere radius="0.06"/></geometry></visual>
+    <collision><geometry><sphere radius="0.06"/></geometry></collision>
   </link>
+  <joint name="wheel_back_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="wheel_back_sphere"/>
+    <origin xyz="-0.18 0 -0.06" rpy="0 0 0"/>
+  </joint>
+
+  <link name="wheel_front_left_sphere">
+    <inertial>
+      <mass value="0.5"/>
+      <origin xyz="0 0 0"/>
+      <!-- Esfera: I = 0.00072 -->
+      <inertia ixx="0.00072" ixy="0" ixz="0" iyy="0.00072" iyz="0" izz="0.00072"/>
+    </inertial>
+    <visual><geometry><sphere radius="0.06"/></geometry></visual>
+    <collision><geometry><sphere radius="0.06"/></geometry></collision>
+  </link>
+  <joint name="wheel_front_left_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="wheel_front_left_sphere"/>
+    <origin xyz="0.18 0.18 -0.06" rpy="0 0 0"/>
+  </joint>
+
+  <link name="wheel_front_right_sphere">
+    <inertial>
+      <mass value="0.5"/>
+      <origin xyz="0 0 0"/>
+      <!-- Esfera: I = 0.00072 -->
+      <inertia ixx="0.00072" ixy="0" ixz="0" iyy="0.00072" iyz="0" izz="0.00072"/>
+    </inertial>
+    <visual><geometry><sphere radius="0.06"/></geometry></visual>
+    <collision><geometry><sphere radius="0.06"/></geometry></collision>
+  </link>
+  <joint name="wheel_front_right_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="wheel_front_right_sphere"/>
+    <origin xyz="0.18 -0.18 -0.06" rpy="0 0 0"/>
+  </joint>
 
   <!-- yaw -->
   <link name="neck_yaw_link">
     <inertial>
-      <mass value="0.2"/>
+      <mass value="6.0"/>
       <origin xyz="0 0 0"/>
-      <inertia ixx="0.0002" ixy="0" ixz="0" iyy="0.0002" iyz="0" izz="0.0002"/>
+      <!-- Cilindro (eje Z): Ixx=Iyy=0.53375, Izz=0.0675 -->
+      <inertia ixx="0.53375" ixy="0" ixz="0" iyy="0.53375" iyz="0" izz="0.0675"/>
     </inertial>
-    <visual><geometry><cylinder radius="0.03" length="0.06"/></geometry></visual>
-    <collision><geometry><cylinder radius="0.03" length="0.06"/></geometry></collision>
+    <visual>
+      <geometry><cylinder radius="0.15" length="1.0"/></geometry>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="0.15" length="1.0"/></geometry>
+    </collision>
   </link>
-  <joint name="neck_yaw" type="revolute">
+  <joint name="neck_yaw" type="continuous">
     <parent link="base_link"/><child link="neck_yaw_link"/>
-    <origin xyz="0 0 0.06" rpy="0 0 0"/><axis xyz="0 0 1"/>
-    <limit lower="-3.1415" upper="3.1415" effort="5" velocity="6.0"/>
+    <origin xyz="0 0 0.5" rpy="0 0 0"/><axis xyz="0 0 1"/>
     <dynamics damping="0.05"/>
   </joint>
 
   <!-- pitch -->
   <link name="neck_pitch_link">
     <inertial>
-      <mass value="0.2"/>
+      <mass value="1.5"/>
       <origin xyz="0 0 0"/>
-      <inertia ixx="0.0002" ixy="0" ixz="0" iyy="0.0002" iyz="0" izz="0.0002"/>
+      <!-- Ixx=Iyy=0.0059375, Izz=0.001875 -->
+      <inertia ixx="0.0059375" ixy="0" ixz="0" iyy="0.0059375" iyz="0" izz="0.001875"/>
     </inertial>
-    <visual><geometry><cylinder radius="0.03" length="0.06"/></geometry></visual>
-    <collision><geometry><cylinder radius="0.03" length="0.06"/></geometry></collision>
+    <visual>
+      <geometry><cylinder radius="0.05" length="0.2"/></geometry>
+      <origin xyz="0 0 0" rpy="1.5708 1.5708 0"/>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="0.2" length="0.06"/></geometry>
+      <origin xyz="0 0 0" rpy="1.5708 1.5708 0"/>
+    </collision>
   </link>
   <joint name="neck_pitch" type="revolute">
     <parent link="neck_yaw_link"/><child link="neck_pitch_link"/>
-    <origin xyz="0 0 0.06" rpy="0 0 0"/><axis xyz="0 1 0"/>
+    <origin xyz="0 0 0.55" rpy="0 0 0"/><axis xyz="0 1 0"/>
     <limit lower="-1.57" upper="1.57" effort="5" velocity="6.0"/>
     <dynamics damping="0.05"/>
   </joint>
@@ -49,16 +111,17 @@
   <!-- roll -->
   <link name="head_link">
     <inertial>
-      <mass value="0.4"/>
+      <mass value="1.0"/>
       <origin xyz="0 0 0"/>
-      <inertia ixx="0.0004" ixy="0" ixz="0" iyy="0.0004" iyz="0" izz="0.0004"/>
+      <!-- Esfera: I=0.009 -->
+      <inertia ixx="0.009" ixy="0" ixz="0" iyy="0.009" iyz="0" izz="0.009"/>
     </inertial>
-    <visual><geometry><sphere radius="0.08"/></geometry></visual>
-    <collision><geometry><sphere radius="0.08"/></geometry></collision>
+    <visual><geometry><sphere radius="0.15"/></geometry></visual>
+    <collision><geometry><sphere radius="0.15"/></geometry></collision>
   </link>
   <joint name="head_roll" type="revolute">
     <parent link="neck_pitch_link"/><child link="head_link"/>
-    <origin xyz="0 0 0.06" rpy="0 0 0"/><axis xyz="1 0 0"/>
+    <origin xyz="0 0 0.2" rpy="0 0 0"/><axis xyz="1 0 0"/>
     <limit lower="-1.57" upper="1.57" effort="5" velocity="6.0"/>
     <dynamics damping="0.05"/>
   </joint>
@@ -66,16 +129,17 @@
   <!-- 1) Link físico de la cámara: un cubito pegado a la esfera -->
   <link name="camera_link">
     <inertial>
-      <mass value="0.02"/>
+      <mass value="0.5"/>
       <origin xyz="0 0 0"/>
-      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+      <!-- Ixx=0.00040833, Iyy=Izz=0.00030833 -->
+      <inertia ixx="0.00040833" ixy="0" ixz="0" iyy="0.00030833" iyz="0" izz="0.00030833"/>
     </inertial>
     <visual>
-      <geometry><box size="0.02 0.04 0.04"/></geometry>
+      <geometry><box size="0.05 0.07 0.07"/></geometry>
       <material name="cam_gray"><color rgba="0.6 0.6 0.6 1"/></material>
     </visual>
     <collision>
-      <geometry><box size="0.02 0.04 0.04"/></geometry>
+      <geometry><box size="0.05 0.07 0.07"/></geometry>
     </collision>
   </link>
 
@@ -84,7 +148,7 @@
     <parent link="head_link"/>
     <child link="camera_link"/>
     <!-- adelante 12 cm; orientamos el link de forma "normal", sin rpy -->
-    <origin xyz="0.09 0 0" rpy="0 0 0"/>
+    <origin xyz="0.15 0 0" rpy="0 0 0"/>
   </joint>
 
   <!-- 3) Frame óptico (Z adelante, X derecha, Y abajo) para RViz -->
@@ -122,19 +186,19 @@
             name="gz::sim::systems::JointPositionController">
       <joint_name>neck_yaw</joint_name>
       <topic>/gz/hmd/neck_yaw/cmd</topic>
-      <p_gain>12</p_gain><i_gain>0.1</i_gain><d_gain>0.2</d_gain>
+      <p_gain>80</p_gain><i_gain>0.0</i_gain><d_gain>8.0</d_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system"
             name="gz::sim::systems::JointPositionController">
       <joint_name>neck_pitch</joint_name>
       <topic>/gz/hmd/neck_pitch/cmd</topic>
-      <p_gain>12</p_gain><i_gain>0.1</i_gain><d_gain>0.2</d_gain>
+      <p_gain>80</p_gain><i_gain>0.0</i_gain><d_gain>8.0</d_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system"
             name="gz::sim::systems::JointPositionController">
       <joint_name>head_roll</joint_name>
       <topic>/gz/hmd/head_roll/cmd</topic>
-      <p_gain>8</p_gain><i_gain>0.05</i_gain><d_gain>0.1</d_gain>
+      <p_gain>60</p_gain><i_gain>0.0</i_gain><d_gain>8.0</d_gain>
     </plugin>
 
     <!-- Publica estados de juntas (GZ Transport -> lo puenteamos a /joint_states) -->
